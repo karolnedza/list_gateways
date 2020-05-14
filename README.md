@@ -1,1 +1,1 @@
-# list_gateways
+Collect information about Gateways
