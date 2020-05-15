@@ -24,6 +24,10 @@ def create_table():
     for i in range(1,len(all_gateways)):
         init_table['Gateway ' + str(i)]['Number'] = ""
         init_table['Gateway ' + str(i)]['Gateway Name'] = ""
+        init_table['Gateway ' + str(i)]['Status'] = ""
+        init_table['Gateway ' + str(i)]['Account'] = ""
+        init_table['Gateway ' + str(i)]['HA Mode'] = ""
+        init_table['Gateway ' + str(i)]['HA-GW'] = ""
         init_table['Gateway ' + str(i)]["Instance Size"] = ""
         init_table['Gateway ' + str(i)]["AMI Id"] = ""
         init_table['Gateway ' + str(i)]["Resize"] = ""
@@ -58,16 +62,20 @@ def populate_table(controller, cid):
         gateway_desc['results']
         init_table['Gateway ' + str(idx)]['Number'] = idx
         init_table['Gateway ' + str(idx)]['Gateway Name'] = gateway
+        init_table['Gateway ' + str(idx)]['Status'] = gateway_desc['results']['vpc_state']
+        init_table['Gateway ' + str(idx)]['Account'] = gateway_desc['results']['account_name']
+        init_table['Gateway ' + str(idx)]['HA Mode'] = gateway_desc['results']['ha_enabled']
+        init_table['Gateway ' + str(idx)]['HA-GW'] = gateway_desc['results']['is_hagw']
         init_table['Gateway ' + str(idx)]["Instance Size"] = gateway_desc['results']['vpc_size']
         init_table['Gateway ' + str(idx)]["AMI Id"] = gateway_desc['results']['gw_image_name']
         if ("micro" or "nano") in gateway_desc['results']['vpc_size']:
             init_table['Gateway ' + str(idx)]["Resize"] = "Yes"
         else:
-            init_table['Gateway ' + str(idx)]["Resize"] = "No"
+            init_table['Gateway ' + str(idx)]["Resize"] = "-"
         if gateway_desc['results']['gw_image_name'] in older_amis:
             init_table['Gateway ' + str(idx)]["Replace"] = "Yes"
         else:
-            init_table['Gateway ' + str(idx)]["Replace"] = "No"
+            init_table['Gateway ' + str(idx)]["Replace"] = "-"
     return init_table
 
 def main():
@@ -86,7 +94,7 @@ def main():
     df = pd.DataFrame(final_table).T
     df_index = df.set_index('Number')
     df_index.to_csv('gw_list.csv')
-    df_index.to_html('gw_list.html')
+    df_index.to_html('gw_list.html', justify='center')
     print("Created file gw_list.html")
     print("Created file gw_list.csv")
 
