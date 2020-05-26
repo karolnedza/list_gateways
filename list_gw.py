@@ -45,7 +45,7 @@ def get_all_gateways(controller, cid):
     response = requests.request("GET", url, headers={}, data = {}, verify = False)
     gw = response.json()
     for i in gw['results']:
-        all_gateways.append(i['cloudn_gateway_inst_name'])
+        all_gateways.append(i['gw_name'])
 
 
 # Core definition
