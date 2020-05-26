@@ -14,6 +14,7 @@ older_amis = {
     'hvm-cloudx-aws-093019'}
 
 ### Create a directory with empty values
+
 def start_table(gw):
     for i in range(1,gw):
         init_table['Gateway ' + str(i)] = {}
