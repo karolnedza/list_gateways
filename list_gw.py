@@ -1,4 +1,5 @@
-#! /usr/bin/python
+#! /usr/bin/python3
+
 import boto3
 import requests, json, urllib3, getpass, sys
 import pandas as pd
@@ -73,7 +74,7 @@ def populate_table(controller, cid, aws_access_key, aws_secret_key):
 
 ## Adding an extra check. Not all AWS aviability zones offer t3.medium
 
-        session = boto3.Session(aws_access_key_id=aws_access_key, aws_secret_access_key=aws_secret_key)
+        session = boto3.Session(aws_access_key_id=aws_access_key, aws_secret_access_key=aws_secret_key, region_name="us-east-1")
         ec2_client = session.client('ec2')
         response = ec2_client.describe_instance_type_offerings(LocationType='availability-zone',
         Filters=
@@ -100,9 +101,6 @@ def populate_table(controller, cid, aws_access_key, aws_secret_key):
     return init_table
 
 
-def clean_ec2(region):
-    session = boto3.Session(aws_access_key_id=aws_access_key, aws_secret_access_key=aws_secret_access)
-    ec2_client = session.client('ec2')
 
 
 def main():
@@ -111,6 +109,7 @@ def main():
     password = getpass.getpass(prompt='Enter Controller password: ')
     aws_access_key = input("Enter AWS Access Key: ")
     aws_secret_key = getpass.getpass(prompt="Enter AWS Secret Key: ")
+
     try:
         cid = login(controller, username, password)
     except:
