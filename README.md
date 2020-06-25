@@ -1,15 +1,21 @@
 # Python libraries to be installed:
 
   $ pip3 install pandas
+  
   $ pip3 install boto3
+  
   $ pip3 install requests
+  
 
 
 # How-to:
 
 $ git clone https://github.com/karolnedza/list_gateways.git .
+
 $ chmod +x list_gw.py
+
 $ ./list_gw.py
+
 Enter Controller IP: 3.215.237.187
 Enter Controller username: admin
 Enter Controller password:
