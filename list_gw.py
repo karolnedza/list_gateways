@@ -3,11 +3,18 @@
 import boto3
 import requests, json, urllib3, getpass, sys
 import pandas as pd
+import time
+
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+### Setting variables
+
 all_gateways = []
+instances_to_resize = []
+instances_to_replace = []
 init_table = {}
+
 older_amis = {
     'hvm-cloudx-aws-011519',
     'hvm-cloudx-aws-041519',
@@ -71,6 +78,7 @@ def populate_table(controller, cid, aws_access_key, aws_secret_key):
         init_table['Gateway ' + str(idx)]["Instance Size"] = gateway_desc['results']['vpc_size']
         init_table['Gateway ' + str(idx)]["AMI Id"] = gateway_desc['results']['gw_image_name']
         init_table['Gateway ' + str(idx)]["GW Zone"] = gateway_desc['results']['gw_zone']
+        print(gateway_desc['results']['gw_image_name'])
 
 ## Adding an extra check. Not all AWS aviability zones offer t3.medium
 
@@ -83,25 +91,47 @@ def populate_table(controller, cid, aws_access_key, aws_secret_key):
                 {'Name': 'location',      'Values': [gateway_desc['results']['gw_zone']]}
             ]
         )
+
         if response['InstanceTypeOfferings'] != []:
             init_table['Gateway ' + str(idx)]["t3.medium supported"] =  "Yes"
         else:
             init_table['Gateway ' + str(idx)]["t3.medium supported"] = '-'
 
         if (("micro" in gateway_desc['results']['vpc_size'] or "small" in gateway_desc['results']['vpc_size']) and (response['InstanceTypeOfferings'] != [])):
-
             init_table['Gateway ' + str(idx)]["Resize"] = "Yes"
+            instances_to_resize.append(gateway_desc['results']['gw_name'])
         else:
             init_table['Gateway ' + str(idx)]["Resize"] = "-"
 
         if gateway_desc['results']['gw_image_name'] in older_amis:
             init_table['Gateway ' + str(idx)]["Replace"] = "Yes"
+            instances_to_replace.append(gateway_desc['results']['gw_name'])
         else:
 
             init_table['Gateway ' + str(idx)]["Replace"] = "-"
     return init_table
 
 
+### Resizing to t3.medum function
+
+def resize_instance(controller, cid, instances_to_resize):
+    for gw in instances_to_resize:
+        url = "https://" + controller + "/v1/api"
+        payload = {'action': 'change_gateway_size','CID': cid, 'gw_name': gw, 'gw_size': 't3.medium'}
+        response = requests.request("POST", url, headers={}, data = payload, files = [], verify = False)
+        gateway_size = response.json()
+        print("Resizing GW: " + gw)
+        print(gateway_size)
+
+### AMI replacing function
+
+def replace_instance(controller, cid, instances_to_replace):
+    for gw in instances_to_replace:
+        url = "https://" + controller + "/v1/api"
+        payload = {'action': 'replace_gateway', 'CID': cid,'gateway_name': gw}
+        response = requests.request("POST", url, headers={}, data = payload, files = [], verify = False)
+        gateway_ami = response.json()
+        print("Replacing GW: " + gw)
 
 
 def main():
@@ -116,6 +146,7 @@ def main():
     except:
         print("Unable to connect to Controller: ", controller)
         sys.exit(1)
+
     gateways = get_all_gateways(controller, cid)
     empty_table = start_table(len(all_gateways)+1)
     main_table = create_table()
@@ -128,8 +159,11 @@ def main():
     print("Created file gw_list.csv")
 
 
+    # resize_instance(controller, cid, instances_to_resize)
+    # replace_instance(controller, cid, instances_to_replace)
 
 
 
 if __name__ == "__main__":
     main()
+
