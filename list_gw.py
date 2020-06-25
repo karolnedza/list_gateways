@@ -115,22 +115,22 @@ def populate_table(controller, cid, aws_access_key, aws_secret_key):
 
 def resize_instance(controller, cid, instances_to_resize):
     for gw in instances_to_resize:
+        print("Resizing GW: ", gw)
         url = "https://" + controller + "/v1/api"
         payload = {'action': 'change_gateway_size','CID': cid, 'gw_name': gw, 'gw_size': 't3.medium'}
         response = requests.request("POST", url, headers={}, data = payload, files = [], verify = False)
         gateway_size = response.json()
-        print("Resizing GW: " + gw)
         print(gateway_size)
 
 ### AMI replacing function
 
 def replace_instance(controller, cid, instances_to_replace):
     for gw in instances_to_replace:
+        print("Replacing GW: ", gw)
         url = "https://" + controller + "/v1/api"
         payload = {'action': 'replace_gateway', 'CID': cid,'gateway_name': gw}
         response = requests.request("POST", url, headers={}, data = payload, files = [], verify = False)
         gateway_ami = response.json()
-        print("Replacing GW: " + gw)
 
 
 def main():
@@ -158,7 +158,7 @@ def main():
     print("Created file gw_list.csv")
 
 
-    # resize_instance(controller, cid, instances_to_resize)
+    resize_instance(controller, cid, instances_to_resize)
     # replace_instance(controller, cid, instances_to_replace)
 
 
