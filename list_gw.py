@@ -88,7 +88,8 @@ def populate_table(controller, cid, aws_access_key, aws_secret_key):
         else:
             init_table['Gateway ' + str(idx)]["t3.medium supported"] = '-'
 
-        if ((("micro" or "small") in gateway_desc['results']['vpc_size']) and response['InstanceTypeOfferings'] != []):
+        if (("micro" in gateway_desc['results']['vpc_size'] or "small" in gateway_desc['results']['vpc_size']) and (response['InstanceTypeOfferings'] != [])):
+
             init_table['Gateway ' + str(idx)]["Resize"] = "Yes"
         else:
             init_table['Gateway ' + str(idx)]["Resize"] = "-"
