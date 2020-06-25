@@ -78,7 +78,6 @@ def populate_table(controller, cid, aws_access_key, aws_secret_key):
         init_table['Gateway ' + str(idx)]["Instance Size"] = gateway_desc['results']['vpc_size']
         init_table['Gateway ' + str(idx)]["AMI Id"] = gateway_desc['results']['gw_image_name']
         init_table['Gateway ' + str(idx)]["GW Zone"] = gateway_desc['results']['gw_zone']
-        print(gateway_desc['results']['gw_image_name'])
 
 ## Adding an extra check. Not all AWS aviability zones offer t3.medium
 
@@ -166,4 +165,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
