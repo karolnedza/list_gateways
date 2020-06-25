@@ -158,7 +158,7 @@ def main():
     print("Created file gw_list.csv")
 
 
-    resize_instance(controller, cid, instances_to_resize)
+    # resize_instance(controller, cid, instances_to_resize)
     # replace_instance(controller, cid, instances_to_replace)
 
 
